@@ -1,0 +1,44 @@
+name: miner
+
+on:
+  schedule:
+    # Daily, a few minutes off the hour so it does not pile onto GitHub's busiest minute.
+    - cron: "23 2 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: miner
+  cancel-in-progress: true
+
+jobs:
+  draw:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Render the animation
+        env:
+          # secrets.GITHUB_TOKEN can read public contributions. Add a personal
+          # access token with the read:user scope as MINER_TOKEN if you also want
+          # private contributions counted.
+          GITHUB_TOKEN: ${{ secrets.MINER_TOKEN || secrets.GITHUB_TOKEN }}
+        # --user defaults to GITHUB_REPOSITORY_OWNER, which Actions already sets.
+        run: python3 generate_miner.py
+
+      - name: Commit if anything changed
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- github-miner.svg github-miner-light.svg; then
+            echo "Nothing changed today."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add github-miner.svg github-miner-light.svg
+          git commit -m "chore: refresh miner animation"
+          git push
