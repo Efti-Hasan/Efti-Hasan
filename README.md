@@ -3,7 +3,7 @@
 <!-- Swap the src below for a .gif any time you find one you like better. -->
 <img align="right" width="230" src="assets/terminal.svg" alt="A terminal: wrong answer on test 4, then accepted" />
 
-Right now I'm deep into competitive programming — solving problems most days and
+Right now I'm deep into competitive programming, solving problems most days and
 picking up new algorithms along the way.
 
 I'm also learning backend development, mostly by building small projects and
